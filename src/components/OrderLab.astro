@@ -78,7 +78,7 @@ const { compact = false } = Astro.props;
         <rect x="527" y="217" width="124" height="68" rx="3" />
         <text class="node-index" x="540" y="234">04B</text>
         <text class="node-name" x="589" y="256" text-anchor="middle">PAYMENT</text>
-        <text class="node-detail" x="589" y="272" text-anchor="middle" data-payment-detail>request a charge</text>
+        <text class="node-detail" x="589" y="272" text-anchor="middle" data-payment-detail>authorize payment</text>
       </g>
       <g class="node" data-node="confirmed">
         <rect x="715" y="135" width="128" height="68" rx="3" />
@@ -108,7 +108,7 @@ const { compact = false } = Astro.props;
       <ol class="event-trace" data-lab-trace aria-label="Events in this replay">
         <li class="empty-trace">No events yet.</li>
       </ol>
-      <details class="static-transcript"><summary>Scenario notes</summary><p><strong>Healthy:</strong> the API remembers the request key, records an event, receives inventory and payment success, and confirms the order.</p><p><strong>Timeout:</strong> the order stays pending when the payment response is missing. Reconciliation with the original payment reference discovers that the charge succeeded, then confirmation is safe.</p><p><strong>Duplicate:</strong> a second request with the same key and payload returns the recorded order. It does not create another logical order or charge.</p></details>
+      <details class="static-transcript"><summary>Scenario notes</summary><p><strong>Healthy:</strong> the API remembers the request key, records an event, receives inventory and payment success, and confirms the order.</p><p><strong>Timeout:</strong> the order stays pending when the payment response is missing. Reconciliation with the original payment reference finds a successful authorization, then confirmation is safe.</p><p><strong>Duplicate:</strong> a second request with the same key and payload returns the recorded order. It does not create another logical order or payment attempt.</p></details>
     </div>
   )}
 
@@ -145,17 +145,17 @@ const { compact = false } = Astro.props;
   };
   const processed: Frame = {
     status: "RESULTS RECEIVED",
-    description: "Inventory reserves the stock. Payment reports a successful charge. Both results are now known.",
-    event: "stock.reserved + payment.succeeded",
+    description: "Inventory reserves the stock. Payment reports a successful authorization. Both results are now known.",
+    event: "stock.reserved + payment.authorized",
     active: ["inventory", "payment"], done: ["checkout", "api", "log"],
-    payment: "charge succeeded",
+    payment: "authorized",
   };
   const confirmed: Frame = {
     status: "ORDER CONFIRMED",
     description: "The order is confirmed after both results arrive. The services did not need to finish at the same time.",
     event: "order.confirmed  ·  order: ORD-042",
     active: ["confirmed"], done: ["checkout", "api", "log", "inventory", "payment"],
-    payment: "charge succeeded",
+    payment: "authorized",
   };
   const scenarios: Record<string, { frames: Frame[]; lesson: string }> = {
     healthy: {
@@ -165,23 +165,23 @@ const { compact = false } = Astro.props;
     timeout: {
       frames: [opening, accepted, recorded, {
         status: "PAYMENT UNKNOWN",
-        description: "Stock is reserved, but the payment response times out. A missing response does not tell us whether the charge happened.",
+        description: "Stock is reserved, but the payment response times out. A missing response does not tell us whether authorization succeeded.",
         event: "payment.response_timeout  ·  outcome: unknown",
         active: ["payment"], done: ["checkout", "api", "log", "inventory"], warning: "payment", payment: "outcome unknown",
       }, {
         status: "PAYMENT RECONCILED",
-        description: "Before retrying a charge, the service checks the payment provider using the original payment reference. The original charge succeeded.",
-        event: "payment.reconciled  ·  original charge succeeded",
-        active: ["payment"], done: ["checkout", "api", "log", "inventory"], payment: "charge found",
+        description: "The service checks the payment provider using the original payment reference. The original authorization succeeded.",
+        event: "payment.reconciled  ·  original authorization succeeded",
+        active: ["payment"], done: ["checkout", "api", "log", "inventory"], payment: "authorized",
       }, confirmed],
-      lesson: "A timeout means the outcome is unknown. Reconcile the original payment before deciding whether a retry is appropriate; do not blindly submit a new charge.",
+      lesson: "A timeout means the outcome is unknown. Reconcile the original payment before deciding whether a retry is appropriate; do not blindly create a new payment attempt.",
     },
     duplicate: {
       frames: [opening, accepted, recorded, processed, confirmed, {
         status: "SAME RESULT RETURNED",
         description: "Checkout repeats the same request with key cart-042. The API returns the recorded order result instead of creating another logical order.",
         event: "request.replayed  ·  same key → same order",
-        active: ["api"], done: ["checkout", "log", "inventory", "payment", "confirmed"], payment: "one logical charge",
+        active: ["api"], done: ["checkout", "log", "inventory", "payment", "confirmed"], payment: "one authorization",
       }],
       lesson: "An idempotency key identifies the same request, with the same payload. It does not promise exactly-once delivery: event consumers and payment operations still need their own deduplication and retry rules.",
     },
@@ -212,7 +212,7 @@ const { compact = false } = Astro.props;
         put("[data-lab-count]", `${String(index).padStart(2, "0")} / ${String(current.frames.length - 1).padStart(2, "0")}`);
         put("[data-lab-description]", frame.description);
         put("[data-lab-lesson]", current.lesson);
-        put("[data-payment-detail]", frame.payment || "request a charge");
+        put("[data-payment-detail]", frame.payment || "authorize payment");
         root.querySelectorAll<SVGGElement>("[data-node]").forEach((node) => {
           const name = node.dataset.node as NodeName;
           node.classList.toggle("is-active", frame.active.includes(name));
