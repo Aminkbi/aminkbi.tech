@@ -23,7 +23,7 @@ These references were read directly on 17 October 2026. They inform the structur
 | [Astro — Content collections](https://docs.astro.build/en/guides/content-collections/) | Keep essays in one typed build-time collection and generate their routes from the collection. |
 | [W3C WCAG 2.2, SC 2.3.3 and SC 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html) | Do not autoplay the model. Support pause/reset, keyboard access, and prefers-reduced-motion; keep scenario results available as text. |
 
-**Implementation status:** the initial Astro version includes three essays, the archive, article routes, lab, RSS, sitemap, and a GitHub Pages deployment workflow. The custom domain still needs DNS and HTTPS verification.
+**Implementation status:** the initial Astro version includes three essays, the archive, article routes, lab, RSS, sitemap, and a GitHub Pages deployment workflow. The custom domain responds over HTTP; HTTPS provisioning is pending.
 
 ## Site map
 
@@ -119,9 +119,19 @@ Before publishing, run the checks, build, and tests, then verify search and the 
 
 ## Deployment
 
-The intended host is GitHub Pages through GitHub Actions. The workflow will build dist/ and publish it from the default branch. [GitHub's Pages documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) describes the public-repository and static-hosting constraints.
+GitHub Pages hosts the site through GitHub Actions. The workflow builds dist/ and publishes it from the default branch. [GitHub's Pages documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) describes the public-repository and static-hosting constraints.
 
-The aminkbi.tech custom domain still requires repository Pages settings, the DNS records supplied by GitHub, and HTTPS verification. This repository is not described as live until those steps are complete.
+The Pages custom domain is aminkbi.tech. DNS was configured through get.tech on 17 October 2026 following [GitHub's custom-domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site):
+
+| Type | Host | Value |
+| --- | --- | --- |
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | aminkbi.github.io |
+
+The apex responds with HTTP 200 from GitHub Pages. DNS propagation and certificate issuance are pending; GitHub notes that DNS changes and availability of the Enforce HTTPS option can take up to 24 hours. Enable Enforce HTTPS once the certificate is available.
 
 ## Research sources
 
