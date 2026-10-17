@@ -1,0 +1,382 @@
+---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<section class:list={["order-lab", { compact }]} data-order-lab data-compact={String(compact)} aria-label="Interactive order processing model">
+  <header class="lab-heading">
+    <span>Order flow</span>
+    <span class="live-status"><span data-lab-status>Ready</span></span>
+  </header>
+
+  {!compact && (
+    <div class="scenario-bar">
+      <label class="scenario-select">
+        <span>Scenario</span>
+        <select data-lab-scenario>
+          <option value="healthy">Healthy checkout</option>
+          <option value="timeout">Payment timeout</option>
+          <option value="duplicate">Duplicate request</option>
+        </select>
+      </label>
+    </div>
+  )}
+
+  <div class="diagram" role="img" aria-label="Checkout flows to the Order API, then the event log. Inventory and payment run independently. The order is confirmed after both outcomes are known." tabindex="0">
+    {compact && <svg class="compact-map" viewBox="0 0 440 270" fill="none" aria-hidden="true"><g class="connections"><path data-edge="log" d="M180 47H260"/><path data-edge="inventory" d="M330 69V95H135V120"/><path data-edge="payment" d="M330 95V120"/><path data-edge="confirmed" d="M135 164V190H220V220"/><path data-edge="confirmed" d="M325 164V190H220"/></g><g class="node" data-node="api"><rect x="40" y="25" width="140" height="44" rx="2"/><text class="node-name" x="110" y="52" text-anchor="middle">Order API</text></g><g class="node" data-node="log"><rect x="260" y="25" width="140" height="44" rx="2"/><text class="node-name" x="330" y="52" text-anchor="middle">Event log</text></g><g class="node" data-node="inventory"><rect x="80" y="120" width="110" height="44" rx="2"/><text class="node-name" x="135" y="147" text-anchor="middle">Inventory</text></g><g class="node" data-node="payment"><rect x="270" y="120" width="110" height="44" rx="2"/><text class="node-name" x="325" y="147" text-anchor="middle">Payment</text></g><g class="node" data-node="confirmed"><rect x="165" y="220" width="110" height="44" rx="2"/><text class="node-name" x="220" y="247" text-anchor="middle">Confirmed</text></g></svg>}
+    <svg class="full-map" viewBox="0 0 860 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <pattern id={compact ? "order-dots-compact" : "order-dots-full"} width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r=".75" fill="currentColor" />
+        </pattern>
+        <marker id={compact ? "order-arrow-compact" : "order-arrow-full"} markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+          <path d="M0 0L4 2.5L0 5" fill="none" stroke="currentColor" stroke-width="1" />
+        </marker>
+      </defs>
+      <rect width="860" height="340" fill={`url(#${compact ? "order-dots-compact" : "order-dots-full"})`} class="dot-field" />
+
+      <g class="connections" marker-end={`url(#${compact ? "order-arrow-compact" : "order-arrow-full"})`}>
+        <path data-edge="api" d="M139 169H185" />
+        <path data-edge="log" d="M307 169H353" />
+        <path data-edge="inventory" d="M477 169H501V87H527" />
+        <path data-edge="payment" d="M477 169H501V251H527" />
+        <path data-edge="confirmed" d="M651 87H681V169H715" />
+        <path data-edge="confirmed" d="M651 251H681V169" marker-end="none" />
+      </g>
+      <text x="501" y="35" class="annotation" text-anchor="middle">DO WORK INDEPENDENTLY</text>
+      <text x="681" y="312" class="annotation" text-anchor="middle">WAIT FOR BOTH</text>
+
+      <g class="node" data-node="checkout">
+        <rect x="17" y="135" width="122" height="68" rx="3" />
+        <text class="node-index" x="30" y="152">01</text>
+        <text class="node-name" x="78" y="174" text-anchor="middle">CHECKOUT</text>
+        <text class="node-detail" x="78" y="190" text-anchor="middle">one request</text>
+      </g>
+      <g class="node" data-node="api">
+        <rect x="185" y="135" width="122" height="68" rx="3" />
+        <text class="node-index" x="198" y="152">02</text>
+        <text class="node-name" x="246" y="174" text-anchor="middle">ORDER API</text>
+        <text class="node-detail" x="246" y="190" text-anchor="middle">accept + remember</text>
+      </g>
+      <g class="node log-node" data-node="log">
+        <rect x="353" y="135" width="124" height="68" rx="3" />
+        <path class="log-lines" d="M363 140V198M467 140V198" />
+        <text class="node-index" x="372" y="152">03</text>
+        <text class="node-name" x="415" y="174" text-anchor="middle">EVENT LOG</text>
+        <text class="node-detail" x="415" y="190" text-anchor="middle">a durable record</text>
+      </g>
+      <g class="node" data-node="inventory">
+        <rect x="527" y="53" width="124" height="68" rx="3" />
+        <text class="node-index" x="540" y="70">04A</text>
+        <text class="node-name" x="589" y="92" text-anchor="middle">INVENTORY</text>
+        <text class="node-detail" x="589" y="108" text-anchor="middle">reserve stock</text>
+      </g>
+      <g class="node" data-node="payment">
+        <rect x="527" y="217" width="124" height="68" rx="3" />
+        <text class="node-index" x="540" y="234">04B</text>
+        <text class="node-name" x="589" y="256" text-anchor="middle">PAYMENT</text>
+        <text class="node-detail" x="589" y="272" text-anchor="middle" data-payment-detail>request a charge</text>
+      </g>
+      <g class="node" data-node="confirmed">
+        <rect x="715" y="135" width="128" height="68" rx="3" />
+        <text class="node-index" x="728" y="152">05</text>
+        <text class="node-name" x="779" y="174" text-anchor="middle">CONFIRMED</text>
+        <text class="node-detail" x="779" y="190" text-anchor="middle">both results known</text>
+      </g>
+      <circle class="junction" cx="501" cy="169" r="3" />
+      <circle class="junction" cx="681" cy="169" r="3" />
+    </svg>
+  </div>
+
+  <div class="replay-bar">
+    <div class="step-copy" aria-live="polite" aria-atomic="true">
+      <span class="step-number" data-lab-count>00 / 04</span>
+      <p data-lab-description>The order is pending until inventory and payment are confirmed.</p>
+    </div>
+    <div class="replay-actions">
+      <button class="run-button" type="button" data-lab-next>{compact ? "Run" : "Next"}</button>
+      <button class="reset-button" type="button" data-lab-reset aria-label="Reset order processing demonstration">Reset</button>
+    </div>
+  </div>
+
+  {!compact && (
+    <div class="trace-section">
+      <div class="trace-heading"><h3>Events</h3></div>
+      <ol class="event-trace" data-lab-trace aria-label="Events in this replay">
+        <li class="empty-trace">No events yet.</li>
+      </ol>
+      <details class="static-transcript"><summary>Scenario notes</summary><p><strong>Healthy:</strong> the API remembers the request key, records an event, receives inventory and payment success, and confirms the order.</p><p><strong>Timeout:</strong> the order stays pending when the payment response is missing. Reconciliation with the original payment reference discovers that the charge succeeded, then confirmation is safe.</p><p><strong>Duplicate:</strong> a second request with the same key and payload returns the recorded order. It does not create another logical order or charge.</p></details>
+    </div>
+  )}
+
+  {compact && <footer class="lab-footnote"><a href="/lab/">Open lab <span aria-hidden="true">↗</span></a></footer>}
+</section>
+
+<script>
+  type NodeName = "checkout" | "api" | "log" | "inventory" | "payment" | "confirmed";
+  type Frame = {
+    status: string;
+    description: string;
+    event?: string;
+    active: NodeName[];
+    done: NodeName[];
+    warning?: NodeName;
+    payment?: string;
+  };
+  const opening: Frame = {
+    status: "READY",
+    description: "The order is pending until inventory and payment are confirmed.",
+    active: [], done: [],
+  };
+  const accepted: Frame = {
+    status: "REQUEST ACCEPTED",
+    description: "The Order API accepts checkout cart-042 and remembers its idempotency key, so a repeated request can find the same order.",
+    event: "request.accepted  ·  key: cart-042",
+    active: ["api"], done: ["checkout"],
+  };
+  const recorded: Frame = {
+    status: "EVENT RECORDED",
+    description: "An OrderPlaced event is durably recorded. Inventory and payment can pick up the work independently.",
+    event: "order.placed  ·  order: ORD-042",
+    active: ["log"], done: ["checkout", "api"],
+  };
+  const processed: Frame = {
+    status: "RESULTS RECEIVED",
+    description: "Inventory reserves the stock. Payment reports a successful charge. Both results are now known.",
+    event: "stock.reserved + payment.succeeded",
+    active: ["inventory", "payment"], done: ["checkout", "api", "log"],
+    payment: "charge succeeded",
+  };
+  const confirmed: Frame = {
+    status: "ORDER CONFIRMED",
+    description: "The order is confirmed after both results arrive. The services did not need to finish at the same time.",
+    event: "order.confirmed  ·  order: ORD-042",
+    active: ["confirmed"], done: ["checkout", "api", "log", "inventory", "payment"],
+    payment: "charge succeeded",
+  };
+  const scenarios: Record<string, { frames: Frame[]; lesson: string }> = {
+    healthy: {
+      frames: [opening, accepted, recorded, processed, confirmed],
+      lesson: "Confirmation depends on known outcomes, not the speed or arrival order of individual services. This is a simplified happy path; a real system also handles compensation and failed reservations.",
+    },
+    timeout: {
+      frames: [opening, accepted, recorded, {
+        status: "PAYMENT UNKNOWN",
+        description: "Stock is reserved, but the payment response times out. A missing response does not tell us whether the charge happened.",
+        event: "payment.response_timeout  ·  outcome: unknown",
+        active: ["payment"], done: ["checkout", "api", "log", "inventory"], warning: "payment", payment: "outcome unknown",
+      }, {
+        status: "PAYMENT RECONCILED",
+        description: "Before retrying a charge, the service checks the payment provider using the original payment reference. The original charge succeeded.",
+        event: "payment.reconciled  ·  original charge succeeded",
+        active: ["payment"], done: ["checkout", "api", "log", "inventory"], payment: "charge found",
+      }, confirmed],
+      lesson: "A timeout means the outcome is unknown. Reconcile the original payment before deciding whether a retry is appropriate; do not blindly submit a new charge.",
+    },
+    duplicate: {
+      frames: [opening, accepted, recorded, processed, confirmed, {
+        status: "SAME RESULT RETURNED",
+        description: "Checkout repeats the same request with key cart-042. The API returns the recorded order result instead of creating another logical order.",
+        event: "request.replayed  ·  same key → same order",
+        active: ["api"], done: ["checkout", "log", "inventory", "payment", "confirmed"], payment: "one logical charge",
+      }],
+      lesson: "An idempotency key identifies the same request, with the same payload. It does not promise exactly-once delivery: event consumers and payment operations still need their own deduplication and retry rules.",
+    },
+  };
+
+  function initializeOrderLabs() {
+    document.querySelectorAll<HTMLElement>("[data-order-lab]").forEach((root) => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = "true";
+      const compact = root.dataset.compact === "true";
+      const next = root.querySelector<HTMLButtonElement>("[data-lab-next]")!;
+      const reset = root.querySelector<HTMLButtonElement>("[data-lab-reset]")!;
+      const select = root.querySelector<HTMLSelectElement>("[data-lab-scenario]");
+      let scenario = "healthy";
+      let index = 0;
+      let playing = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+
+      const put = (selector: string, value: string) => {
+        const element = root.querySelector(selector);
+        if (element) element.textContent = value;
+      };
+      const render = () => {
+        const current = scenarios[scenario];
+        const frame = current.frames[index];
+        const last = index === current.frames.length - 1;
+        put("[data-lab-status]", frame.status[0] + frame.status.slice(1).toLowerCase());
+        put("[data-lab-count]", `${String(index).padStart(2, "0")} / ${String(current.frames.length - 1).padStart(2, "0")}`);
+        put("[data-lab-description]", frame.description);
+        put("[data-lab-lesson]", current.lesson);
+        put("[data-payment-detail]", frame.payment || "request a charge");
+        root.querySelectorAll<SVGGElement>("[data-node]").forEach((node) => {
+          const name = node.dataset.node as NodeName;
+          node.classList.toggle("is-active", frame.active.includes(name));
+          node.classList.toggle("is-done", frame.done.includes(name));
+          node.classList.toggle("is-warning", frame.warning === name);
+        });
+        root.querySelectorAll<SVGPathElement>("[data-edge]").forEach((edge) => {
+          const name = edge.dataset.edge as NodeName;
+          edge.classList.toggle("is-traced", frame.active.includes(name) || frame.done.includes(name));
+        });
+        root.classList.toggle("has-warning", !!frame.warning);
+        next.textContent = compact ? (playing ? "Pause" : last ? "Replay" : index > 0 ? "Resume" : "Run") : last ? "Replay" : "Next";
+        reset.disabled = index === 0;
+        const trace = root.querySelector<HTMLOListElement>("[data-lab-trace]");
+        if (trace) {
+          trace.replaceChildren();
+          if (index === 0) {
+            const empty = document.createElement("li");
+            empty.className = "empty-trace";
+            empty.textContent = "No events yet.";
+            trace.append(empty);
+          } else {
+            current.frames.slice(1, index + 1).forEach((item, position) => {
+              const entry = document.createElement("li");
+              const number = document.createElement("span");
+              number.textContent = String(position + 1).padStart(2, "0");
+              const event = document.createElement("code");
+              event.textContent = item.event || "";
+              entry.append(number, event);
+              trace.append(entry);
+            });
+          }
+        }
+      };
+      const stop = () => {
+        clearTimeout(timer);
+        playing = false;
+      };
+      const tick = () => {
+        if (!root.isConnected) return stop();
+        index += 1;
+        if (index === scenarios[scenario].frames.length - 1) playing = false;
+        render();
+        if (playing) timer = setTimeout(tick, 1600);
+      };
+      next.addEventListener("click", () => {
+        if (playing) { stop(); render(); return; }
+        if (index === scenarios[scenario].frames.length - 1) index = 0;
+        if (compact) {
+          playing = true;
+          tick();
+        } else {
+          index += 1;
+          render();
+        }
+      });
+      reset.addEventListener("click", () => { stop(); index = 0; render(); });
+      select?.addEventListener("change", () => { stop(); scenario = select.value; index = 0; render(); });
+      render();
+    });
+  }
+  initializeOrderLabs();
+  document.addEventListener("astro:page-load", initializeOrderLabs);
+</script>
+
+<style>
+  .order-lab { --lab-ink: #e5e9e5; --lab-muted: #9eafb5; --lab-rust: #e18b60; --lab-mint: #b7d1bd; color: var(--lab-ink); background: #192a36; border: 1px solid #354650; border-radius: 3px; overflow: hidden; font-family: var(--font-sans, sans-serif); }
+  .lab-heading { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 24px 26px 0; font: 10px/1.5 var(--font-mono, monospace); letter-spacing: .1em; color: var(--lab-muted); }
+  .live-status { display: flex; align-items: center; gap: 7px; font-size: 9px; letter-spacing: .055em; text-align: right; }
+  .live-status i { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: var(--lab-mint); }
+  .has-warning .live-status i { background: var(--lab-rust); }
+  .diagram { padding: 8px 15px 0; }
+  .diagram:focus-visible { outline: 1px solid var(--lab-rust); outline-offset: -3px; }
+  .diagram-scroll-hint { display: none; }
+  .diagram svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .dot-field { color: #7e969e; opacity: .16; }
+  .connections { stroke: #5a707a; stroke-width: 1; color: #8ba0a7; }
+  .connections path { transition: stroke .25s ease; }
+  .connections .is-traced { stroke: var(--lab-mint); }
+  .junction { fill: #8ba0a7; }
+  .annotation { fill: #90a4ac; font: 10px var(--font-mono, monospace); letter-spacing: 1px; }
+  .node rect { fill: #1c303d; stroke: #637983; stroke-width: 1; transition: fill .25s ease, stroke .25s ease; }
+  .node-index { fill: #94a8af; font: 7px var(--font-mono, monospace); letter-spacing: 1px; }
+  .node-name { fill: #e5e9e5; font: 15px var(--font-mono, monospace); letter-spacing: .4px; }
+  .node-detail { fill: #9aadb5; font: 9px var(--font-mono, monospace); }
+  .log-lines { stroke: #637983; stroke-width: .7; }
+  .node.is-active rect { fill: #31443f; stroke: var(--lab-mint); stroke-width: 1.5; }
+  .node.is-active .node-name, .node.is-done .node-name { fill: #d3e7d7; }
+  .node.is-done rect { fill: #20383a; stroke: #7d9c91; }
+  .node.is-warning rect { fill: #44382f; stroke: var(--lab-rust); }
+  .node.is-warning .node-name, .node.is-warning .node-detail { fill: #f0b290; }
+  .replay-bar { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 0 26px 27px; }
+  .step-copy { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 17px; flex: 1; }
+  .step-number { color: var(--lab-rust); white-space: nowrap; padding-top: 3px; font: 10px/1.6 var(--font-mono, monospace); letter-spacing: .06em; }
+  .step-copy p { margin: 0; max-width: 56ch; min-height: 3.3em; font-size: 13px; line-height: 1.65; color: #c4d0d2; }
+  .replay-actions { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+  .run-button { border: 1px solid #82978c; background: var(--lab-mint); color: #192a36; border-radius: 2px; padding: 12px 15px; font: 11px/1.3 var(--font-mono, monospace); cursor: pointer; white-space: nowrap; transition: background .15s ease; }
+  .run-button:hover:not(:disabled) { background: #d2e5d5; }
+  .run-button:disabled { cursor: default; background: #91aba0; }
+  .reset-button { border: 0; padding: 8px 0; background: transparent; color: #b8c6c9; font: 11px var(--font-mono, monospace); cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+  .reset-button:disabled { opacity: .4; cursor: default; }
+  button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--lab-rust); outline-offset: 5px; }
+  .lab-footnote { border-top: 1px solid #3b4b54; display: flex; align-items: baseline; justify-content: space-between; gap: 22px; padding: 17px 26px; color: #92a6ae; font: 9px/1.6 var(--font-mono, monospace); letter-spacing: .055em; }
+  .lab-footnote > span:last-child:not(:first-child) { max-width: 50ch; text-align: right; letter-spacing: 0; }
+  .lab-footnote a { color: #c4d3ca; text-decoration: none; white-space: nowrap; letter-spacing: 0; }
+  .lab-footnote a:hover { color: #fff; }
+  .scenario-bar { display: flex; justify-content: space-between; align-items: end; gap: 30px; padding: 30px 26px 0; }
+  .scenario-select { display: grid; gap: 10px; min-width: 210px; }
+  .scenario-select > span { font: 9px var(--font-mono, monospace); letter-spacing: .1em; color: #9eafb5; }
+  .scenario-select select { border: 1px solid #5c717c; border-radius: 2px; padding: 10px 28px 10px 12px; font: 13px var(--font-sans, sans-serif); color: #e5e9e5; background: #213542; }
+  .scenario-bar p { color: #aabac0; font-size: 12px; line-height: 1.6; margin: 0 0 3px; max-width: 29ch; }
+  .trace-section { margin: 0 26px 28px; border-top: 1px solid #3b4b54; padding-top: 23px; }
+  .trace-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; }
+  .trace-heading h3 { font-size: 14px; font-weight: 500; margin: 0; }
+  .trace-heading > span { color: #92a6ae; font: 8px var(--font-mono, monospace); letter-spacing: .05em; }
+  .event-trace { margin: 18px 0 22px; list-style: none; padding: 0; min-height: 58px; }
+  .event-trace :global(li) { display: flex; gap: 20px; padding: 8px 0; font: 11px/1.5 var(--font-mono, monospace); color: #d0dbd8; }
+  .event-trace :global(li > span) { color: #e18b60; font-size: 9px; padding-top: 1px; }
+  .event-trace :global(code) { overflow-wrap: anywhere; font: inherit; }
+  .event-trace :global(.empty-trace) { color: #91a5ad; font-family: var(--font-sans, sans-serif); font-size: 12px; }
+  .lesson { background: #223640; border-left: 2px solid #b7d1bd; padding: 15px 18px; }
+  .lesson > span { color: #b7d1bd; font: 9px var(--font-mono, monospace); letter-spacing: .1em; }
+  .lesson p { margin: 8px 0 0; color: #c4d0d2; font-size: 13px; line-height: 1.7; }
+  .static-transcript { margin-top: 20px; font-size: 12px; line-height: 1.8; color: #c4d0d2; }
+  .static-transcript summary { cursor: pointer; color: #b7d1bd; }
+  .static-transcript p { margin: 14px 0 0; }
+  .compact .replay-bar { gap: 20px; align-items: end; }
+  .compact .step-copy { display: block; }
+  .compact .step-number { display: block; margin-bottom: 10px; }
+  .compact .step-copy p { max-width: 36ch; font-size: 12px; min-height: 4.95em; }
+  .compact .run-button { padding: 11px 12px; font-size: 10px; }
+  .compact .full-map { display: none; }
+  .compact .diagram { padding: 20px 25px; }
+  .compact .diagram svg { min-width: 0; width: 100%; max-height: 270px; }
+  .compact .step-number { display: none; }
+  .lab-heading { font-family: var(--font-sans, sans-serif); font-size: 14px; letter-spacing: 0; }
+  .live-status { font-family: var(--font-sans, sans-serif); font-size: 11px; letter-spacing: 0; }
+  .lab-footnote { font-family: var(--font-sans, sans-serif); font-size: 12px; letter-spacing: 0; }
+  .run-button { font-family: var(--font-sans, sans-serif); font-size: 12px; min-width: 60px; }
+  .compact .run-button { font-family: var(--font-sans, sans-serif); font-size: 12px; min-width: 60px; }
+  .scenario-select>span { font-family: var(--font-sans, sans-serif); font-size: 12px; letter-spacing: 0; }
+  .node-index, .annotation { display: none; }
+  @media (max-width: 650px) {
+    .lab-heading { padding: 20px 18px 0; font-size: 8px; gap: 12px; }
+    .live-status { font-size: 7px; }
+    .diagram { padding: 20px 0 8px; overflow-x: auto; }
+    .full-map { min-width: 540px; }
+    .compact .diagram svg { min-width: 0; }
+    .diagram-scroll-hint { display: block; margin: 0 18px 20px; color: #90a4ac; font: 7px var(--font-mono, monospace); letter-spacing: .08em; }
+    .replay-bar, .compact .replay-bar { padding: 0 18px 22px; display: block; }
+    .step-copy { gap: 12px; }
+    .step-copy p, .compact .step-copy p { font-size: 12px; min-height: 5em; max-width: none; }
+    .replay-actions { margin-top: 16px; }
+    .compact .step-copy { display: block; }
+    .compact .step-number { margin-bottom: 0; }
+    .lab-footnote { padding: 15px 18px; font-size: 8px; gap: 12px; flex-wrap: wrap; }
+    .lab-footnote > span:last-child:not(:first-child) { text-align: left; }
+    .scenario-bar { padding: 26px 18px 0; }
+    .scenario-bar p { display: none; }
+    .scenario-select { width: 100%; }
+    .trace-section { margin-right: 18px; margin-left: 18px; }
+    .trace-heading > span { font-size: 7px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .node rect, .connections path, .run-button { transition: none; }
+  }
+</style>

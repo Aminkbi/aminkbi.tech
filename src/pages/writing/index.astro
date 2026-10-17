@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const entries = (await getCollection('writing')).sort((a,b) => Number(a.data.issue) - Number(b.data.issue));
+---
+<Base title="Writing — aminkbi.tech" description="Essays and field notes on distributed systems, idempotency, event delivery, and reliable software.">
+  <section class="page-intro container"><h1>Writing</h1></section>
+  <section class="archive container" aria-label="Writing archive">
+    <div class="archive-tools"><div class="filter-group" role="group" aria-label="Filter by topic"><button class="filter active" aria-pressed="true" data-topic="all">All writing <span>{entries.length.toString().padStart(2,'0')}</span></button><button class="filter" aria-pressed="false" data-topic="Distributed systems">Distributed systems</button><button class="filter" aria-pressed="false" data-topic="Data systems">Data systems</button></div><label class="search-field"><span class="sr-only">Search writing</span><svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor"/><path d="m13 13 4 4" stroke="currentColor"/></svg><input type="search" placeholder="Find a question…" id="writing-search" /></label></div>
+    <p class="archive-result eyebrow" aria-live="polite" id="results-count">{entries.length} essays & notes</p>
+    <div class="archive-list">{entries.map(entry => <a class="archive-entry" data-topic={entry.data.topic} data-search={`${entry.data.title} ${entry.data.description} ${entry.data.topic} ${entry.data.type}`.toLowerCase()} href={`/writing/${entry.id}/`}><div><h2>{entry.data.title}</h2><p class="archive-description">{entry.data.description}</p></div><div class="archive-entry-end"><time datetime={entry.data.publishedAt.toISOString()}>{entry.data.publishedAt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}</time><span>{entry.data.readingTime} read</span><span aria-hidden="true">↗</span></div></a>)}</div>
+    <div class="empty-results" hidden><h2>No notes on that question yet.</h2><p>Try a different phrase or explore all the writing.</p><button class="button" id="clear-search">Clear filters <span aria-hidden="true">↗</span></button></div>
+  </section>
+  <section class="archive-bottom container"><a class="text-link" href="/rss.xml">RSS ↗</a></section>
+</Base>
+<script>
+  const input = document.querySelector<HTMLInputElement>('#writing-search');
+  const filters = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const entries = document.querySelectorAll<HTMLElement>('.archive-entry');
+  const count = document.querySelector('#results-count');
+  const empty = document.querySelector<HTMLElement>('.empty-results');
+  let topic = 'all';
+  function update() {
+    const query = input?.value.trim().toLowerCase() ?? '';
+    let visible = 0;
+    entries.forEach(entry => { const match = (topic === 'all' || entry.dataset.topic === topic) && query.split(/\s+/).every(word => (entry.dataset.search ?? '').includes(word)); entry.hidden = !match; if(match) visible++; });
+    if(count) count.textContent = `${visible} ${visible === 1 ? 'essay or note' : 'essays & notes'}`;
+    if(empty) empty.hidden = visible !== 0;
+    filters.forEach(button => { const active = button.dataset.topic === topic; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
+  }
+  input?.addEventListener('input', update);
+  filters.forEach(button => button.addEventListener('click', () => { topic = button.dataset.topic ?? 'all'; update(); }));
+  document.querySelector('#clear-search')?.addEventListener('click', () => { topic = 'all'; if(input) { input.value = ''; input.focus(); } update(); });
+</script>

@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; }
+const { title = 'aminkbi.tech — Systems, examined.', description = 'A field journal about distributed systems, reliable software, and the tradeoffs in between. Essays and small interactive experiments by Amin.' } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f5f3ec" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={path.startsWith('/writing/') && path !== '/writing/' ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <link rel="canonical" href={canonical} />
+    <link rel="preload" href="/fonts/instrument-serif-400-normal.woff" as="font" type="font/woff" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="aminkbi.tech" href="/rss.xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header container">
+      <a href="/" class="wordmark" aria-label="aminkbi.tech home"><span class="brand-symbol" aria-hidden="true">a.</span>aminkbi<span class="domain">.tech</span></a>
+      <nav aria-label="Main navigation">
+        <a href="/writing/" aria-current={path.startsWith('/writing') ? 'page' : undefined}>Writing</a>
+        <a href="/lab/" aria-current={path.startsWith('/lab') ? 'page' : undefined}>Lab</a>
+        <a href="/about/" aria-current={path.startsWith('/about') ? 'page' : undefined}>About</a>
+        <a class="nav-github" href="https://github.com/Aminkbi/aminkbi.tech" aria-label="Source on GitHub">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer container">
+      <div><a class="footer-brand" href="/">aminkbi.tech</a></div>
+      <div class="footer-links"><a href="/writing/">All writing</a><a href="/rss.xml">RSS ↗</a><a href="https://github.com/Aminkbi/aminkbi.tech">Source ↗</a></div>
+      <p class="footer-colophon">© {new Date().getUTCFullYear()} Amin</p>
+    </footer>
+  </body>
+</html>

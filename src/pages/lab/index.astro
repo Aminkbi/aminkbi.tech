@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import OrderLab from '../../components/OrderLab.astro';
+---
+<Base title="The order-flow lab — aminkbi.tech" description="Step through a simplified order-processing system. Explore a normal checkout, a payment timeout, and a duplicate request.">
+  <section class="page-intro container"><h1>Order flow</h1></section>
+  <section class="full-lab container" aria-label="Interactive order-flow experiment"><OrderLab /></section>
+  <section class="lab-context container"><div><a class="text-link" href="/writing/reliable-orders/">The order-processing design ↗</a></div><div><p>A simplified model of successful, timed-out, and repeated checkouts. Real services also need durable state, concurrency control, and compensation for failed orders.</p></div></section>
+</Base>

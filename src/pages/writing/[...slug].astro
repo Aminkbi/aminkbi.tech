@@ -1,0 +1,18 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import OrderLab from '../../components/OrderLab.astro';
+export async function getStaticPaths() { return (await getCollection('writing')).map(entry => ({ params: { slug: entry.id }, props: { entry } })); }
+interface Props { entry: CollectionEntry<'writing'>; }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const related = (await getCollection('writing')).filter(other => other.id !== entry.id);
+const published = entry.data.publishedAt.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric', timeZone: 'UTC' });
+---
+<Base title={`${entry.data.title} — aminkbi.tech`} description={entry.data.description}>
+  <header class="article-header container"><a class="back-link" href="/writing/">← Writing</a><h1>{entry.data.title}</h1><p class="article-description">{entry.data.description}</p><div class="article-meta"><span>Amin</span><time datetime={entry.data.publishedAt.toISOString()}>{published}</time><span>{entry.data.readingTime} read</span></div></header>
+  <div class="article-layout container"><aside class="article-toc" aria-label="On this page"><nav>{headings.filter(heading => heading.depth === 2).map(heading => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav></aside><article class="prose"><Content /><div class="article-end"><a href={`https://github.com/Aminkbi/aminkbi.tech/issues/new?title=${encodeURIComponent(`Note on: ${entry.data.title}`)}`}>Suggest a correction ↗</a></div></article></div>
+  {entry.id === 'reliable-orders' && <section class="article-experiment container"><div class="section-heading"><h2>Order flow</h2><a class="text-link" href="/lab/">Lab ↗</a></div><OrderLab compact /></section>}
+  <section class="related container"><div>{related.map(other => <a href={`/writing/${other.id}/`}><h2>{other.data.title}</h2><span aria-hidden="true">↗</span></a>)}</div></section>
+</Base>
