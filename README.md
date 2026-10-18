@@ -64,7 +64,7 @@ featured: false
 
 title, description, publishedAt, type, topic, readingTime, and issue are required. featured defaults to false. type is Deep dive or Field note; topic is Distributed systems or Data systems. Every committed entry is included in the archive, routes, and RSS feed.
 
-Essay structure is consistent: requirements and assumptions, a baseline design, one request path, a failure or retry, the invariant and trade-off, then references.
+Essay structure is consistent: requirements and assumptions, a baseline design, one request path, a failure or retry, the invariant and trade-off, then references. Writing follows the agent skill in `.agents/skills/writing/`.
 
 ## Design system
 
@@ -77,7 +77,7 @@ The visual system uses a warm paper background, dark ink, rust for emphasis and 
 | Rust | #b74d2c | Links, active states, and failures |
 | Deep navy | #192a36 | Diagrams, traces, and code blocks |
 
-Instrument Serif is used for headlines, DM Sans for body and navigation, and DM Mono for technical labels. Fonts are served locally with their licenses. The layout uses a narrow reading measure, ruled sections, and diagrams whose labels match the prose. Decorative badges, slogans, and repeated UI instructions are omitted. Controls are keyboard reachable with visible focus; state is conveyed by text as well as color. Motion is user-controlled and reduced through prefers-reduced-motion.
+Instrument Serif is used for headlines, DM Sans for body and navigation, and DM Mono for technical labels. Fonts are served locally with their licenses. The layout uses a narrow reading measure, ruled sections, and diagrams whose labels match the prose. Decorative badges, slogans, and repeated UI instructions are omitted. Controls are keyboard reachable with visible focus; state is conveyed by text as well as color. Motion is user-controlled and reduced through prefers-reduced-motion. UI changes follow the agent skill in `.agents/skills/design/`, which encodes these rules for Codex and other agents.
 
 ## Implementation
 

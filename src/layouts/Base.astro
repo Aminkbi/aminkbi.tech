@@ -17,6 +17,17 @@ const canonical = new URL(path, Astro.site);
     <meta property="og:type" content={path.startsWith('/writing/') && path !== '/writing/' ? 'article' : 'website'} />
     <meta property="og:url" content={canonical} />
     <link rel="canonical" href={canonical} />
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('aminkbi-theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+        } catch {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
     <link rel="preload" href="/fonts/instrument-serif-400-normal.woff" as="font" type="font/woff" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title="aminkbi.tech" href="/rss.xml" />
@@ -25,11 +36,12 @@ const canonical = new URL(path, Astro.site);
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header container">
-      <a href="/" class="wordmark" aria-label="aminkbi.tech home"><span class="brand-symbol" aria-hidden="true">a.</span>aminkbi<span class="domain">.tech</span></a>
+      <a href="/" class="wordmark" aria-label="a. aminkbi .tech home"><span class="brand-symbol" aria-hidden="true">a.</span>aminkbi<span class="domain">.tech</span></a>
       <nav aria-label="Main navigation">
         <a href="/writing/" aria-current={path.startsWith('/writing') ? 'page' : undefined}>Writing</a>
         <a href="/lab/" aria-current={path.startsWith('/lab') ? 'page' : undefined}>Lab</a>
         <a href="/about/" aria-current={path.startsWith('/about') ? 'page' : undefined}>About</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"><span class="theme-toggle-mark" data-theme-mark aria-hidden="true">☾</span><span data-theme-label>Dark</span></button>
         <a class="nav-github" href="https://github.com/Aminkbi/aminkbi.tech" aria-label="Source on GitHub">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
@@ -39,5 +51,31 @@ const canonical = new URL(path, Astro.site);
       <div class="footer-links"><a href="/writing/">All writing</a><a href="/rss.xml">RSS ↗</a><a href="https://github.com/Aminkbi/aminkbi.tech">Source ↗</a></div>
       <p class="footer-colophon">© {new Date().getUTCFullYear()} Amin</p>
     </footer>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const button = document.querySelector('[data-theme-toggle]');
+        const label = document.querySelector('[data-theme-label]');
+        const mark = document.querySelector('[data-theme-mark]');
+        const meta = document.querySelector('meta[name="theme-color"]');
+        const apply = (theme) => {
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+          if (mark) mark.textContent = theme === 'dark' ? '☼' : '☾';
+          if (button) {
+            button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+            button.setAttribute('aria-pressed', String(theme === 'dark'));
+          }
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#101820' : '#f5f3ec');
+        };
+        apply(root.dataset.theme || 'light');
+        button?.addEventListener('click', () => {
+          const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          try { localStorage.setItem('aminkbi-theme', next); } catch {}
+          apply(next);
+        });
+      })();
+    </script>
   </body>
 </html>

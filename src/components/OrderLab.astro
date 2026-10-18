@@ -26,8 +26,8 @@ const { compact = false } = Astro.props;
   )}
 
   <div class="diagram" role="img" aria-label="Checkout flows to the Order API, then the event log. Inventory and payment run independently. The order is confirmed after both outcomes are known." tabindex="0">
-    {compact && <svg class="compact-map" viewBox="0 0 440 270" fill="none" aria-hidden="true"><g class="connections"><path data-edge="log" d="M180 47H260"/><path data-edge="inventory" d="M330 69V95H135V120"/><path data-edge="payment" d="M330 95V120"/><path data-edge="confirmed" d="M135 164V190H220V220"/><path data-edge="confirmed" d="M325 164V190H220"/></g><g class="node" data-node="api"><rect x="40" y="25" width="140" height="44" rx="2"/><text class="node-name" x="110" y="52" text-anchor="middle">Order API</text></g><g class="node" data-node="log"><rect x="260" y="25" width="140" height="44" rx="2"/><text class="node-name" x="330" y="52" text-anchor="middle">Event log</text></g><g class="node" data-node="inventory"><rect x="80" y="120" width="110" height="44" rx="2"/><text class="node-name" x="135" y="147" text-anchor="middle">Inventory</text></g><g class="node" data-node="payment"><rect x="270" y="120" width="110" height="44" rx="2"/><text class="node-name" x="325" y="147" text-anchor="middle">Payment</text></g><g class="node" data-node="confirmed"><rect x="165" y="220" width="110" height="44" rx="2"/><text class="node-name" x="220" y="247" text-anchor="middle">Confirmed</text></g></svg>}
-    <svg class="full-map" viewBox="0 0 860 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    {compact && <svg class="compact-map" viewBox="0 0 440 270" fill="none" aria-hidden="true"><g class="connections"><path data-edge="log" d="M180 47H260"/><path data-edge="inventory" d="M330 69V95H135V120"/><path data-edge="payment" d="M330 95V120"/><path data-edge="confirmed" d="M135 164V190H220V220"/><path data-edge="confirmed" d="M325 164V190H220"/></g><g class="packets"><circle data-packet="primary" class="packet" r="3.5"/><circle data-packet="secondary" class="packet packet-secondary" r="3.5"/></g><g class="node" data-node="api"><rect x="40" y="25" width="140" height="44" rx="2"/><text class="node-name" x="110" y="52" text-anchor="middle">Order API</text></g><g class="node" data-node="log"><rect x="260" y="25" width="140" height="44" rx="2"/><text class="node-name" x="330" y="52" text-anchor="middle">Event log</text></g><g class="node" data-node="inventory"><rect x="80" y="120" width="110" height="44" rx="2"/><text class="node-name" x="135" y="147" text-anchor="middle">Inventory</text></g><g class="node" data-node="payment"><rect x="270" y="120" width="110" height="44" rx="2"/><text class="node-name" x="325" y="147" text-anchor="middle">Payment</text></g><g class="node" data-node="confirmed"><rect x="165" y="220" width="110" height="44" rx="2"/><text class="node-name" x="220" y="247" text-anchor="middle">Confirmed</text></g></svg>}
+    {!compact && <svg class="full-map" viewBox="0 0 860 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <pattern id={compact ? "order-dots-compact" : "order-dots-full"} width="18" height="18" patternUnits="userSpaceOnUse">
           <circle cx="1" cy="1" r=".75" fill="currentColor" />
@@ -45,6 +45,10 @@ const { compact = false } = Astro.props;
         <path data-edge="payment" d="M477 169H501V251H527" />
         <path data-edge="confirmed" d="M651 87H681V169H715" />
         <path data-edge="confirmed" d="M651 251H681V169" marker-end="none" />
+      </g>
+      <g class="packets" pointer-events="none">
+        <circle data-packet="primary" class="packet" r="4" />
+        <circle data-packet="secondary" class="packet packet-secondary" r="4" />
       </g>
       <text x="501" y="35" class="annotation" text-anchor="middle">DO WORK INDEPENDENTLY</text>
       <text x="681" y="312" class="annotation" text-anchor="middle">WAIT FOR BOTH</text>
@@ -88,7 +92,60 @@ const { compact = false } = Astro.props;
       </g>
       <circle class="junction" cx="501" cy="169" r="3" />
       <circle class="junction" cx="681" cy="169" r="3" />
-    </svg>
+    </svg>}
+    {!compact && <svg class="mobile-map" viewBox="0 0 360 460" fill="none" aria-hidden="true">
+      <defs>
+        <pattern id="order-dots-mobile" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r=".75" fill="currentColor" />
+        </pattern>
+        <marker id="order-arrow-mobile" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+          <path d="M0 0L4 2.5L0 5" fill="none" stroke="currentColor" stroke-width="1" />
+        </marker>
+      </defs>
+      <rect width="360" height="460" fill="url(#order-dots-mobile)" class="dot-field" />
+      <g class="connections" marker-end="url(#order-arrow-mobile)">
+        <path data-edge="api" d="M180 63V95" />
+        <path data-edge="log" d="M180 143V175" />
+        <path data-edge="inventory" d="M180 223V252H92.5V285" />
+        <path data-edge="payment" d="M180 223V252H267.5V285" />
+        <path data-edge="confirmed" d="M92.5 341V366H180V395" />
+        <path data-edge="confirmed" d="M267.5 341V366H180" marker-end="none" />
+      </g>
+      <g class="packets" pointer-events="none">
+        <circle data-packet="primary" class="packet" r="4" />
+        <circle data-packet="secondary" class="packet packet-secondary" r="4" />
+      </g>
+      <g class="node" data-node="checkout">
+        <rect x="115" y="15" width="130" height="48" rx="3" />
+        <text class="node-name" x="180" y="36" text-anchor="middle">Checkout</text>
+        <text class="node-detail" x="180" y="52" text-anchor="middle">one request</text>
+      </g>
+      <g class="node" data-node="api">
+        <rect x="115" y="95" width="130" height="48" rx="3" />
+        <text class="node-name" x="180" y="116" text-anchor="middle">Order API</text>
+        <text class="node-detail" x="180" y="132" text-anchor="middle">remember key</text>
+      </g>
+      <g class="node" data-node="log">
+        <rect x="115" y="175" width="130" height="48" rx="3" />
+        <text class="node-name" x="180" y="196" text-anchor="middle">Event log</text>
+        <text class="node-detail" x="180" y="212" text-anchor="middle">durable record</text>
+      </g>
+      <g class="node" data-node="inventory">
+        <rect x="20" y="285" width="145" height="56" rx="3" />
+        <text class="node-name" x="92.5" y="309" text-anchor="middle">Inventory</text>
+        <text class="node-detail" x="92.5" y="326" text-anchor="middle">reserve stock</text>
+      </g>
+      <g class="node" data-node="payment">
+        <rect x="195" y="285" width="145" height="56" rx="3" />
+        <text class="node-name" x="267.5" y="309" text-anchor="middle">Payment</text>
+        <text class="node-detail" x="267.5" y="326" text-anchor="middle" data-payment-detail>authorize payment</text>
+      </g>
+      <g class="node" data-node="confirmed">
+        <rect x="115" y="395" width="130" height="56" rx="3" />
+        <text class="node-name" x="180" y="419" text-anchor="middle">Confirmed</text>
+        <text class="node-detail" x="180" y="436" text-anchor="middle">both known</text>
+      </g>
+    </svg>}
   </div>
 
   <div class="replay-bar">
@@ -192,6 +249,8 @@ const { compact = false } = Astro.props;
       if (root.dataset.initialized) return;
       root.dataset.initialized = "true";
       const compact = root.dataset.compact === "true";
+      const narrowLayout = window.matchMedia("(max-width: 600px)");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const next = root.querySelector<HTMLButtonElement>("[data-lab-next]")!;
       const reset = root.querySelector<HTMLButtonElement>("[data-lab-reset]")!;
       const select = root.querySelector<HTMLSelectElement>("[data-lab-scenario]");
@@ -199,10 +258,134 @@ const { compact = false } = Astro.props;
       let index = 0;
       let playing = false;
       let timer: ReturnType<typeof setTimeout> | undefined;
+      let transitionId = 0;
+      type MotionControls = { stop: () => void; finished: Promise<void> };
+      let activeAnimations: MotionControls[] = [];
+
+      const animateValue = (from: number, to: number, duration: number, onUpdate: (value: number) => void): MotionControls => {
+        let frame = 0;
+        let stopped = false;
+        let resolveFinished: () => void = () => {};
+        const finished = new Promise<void>((resolve) => { resolveFinished = resolve; });
+        const started = performance.now();
+        const tick = (now: number) => {
+          if (stopped) return;
+          const progress = Math.min(1, (now - started) / (duration * 1000));
+          const eased = progress < 0.5
+            ? 2 * progress * progress
+            : 1 - ((-2 * progress + 2) ** 2) / 2;
+          onUpdate(from + (to - from) * eased);
+          if (progress >= 1) resolveFinished();
+          else frame = requestAnimationFrame(tick);
+        };
+        frame = requestAnimationFrame(tick);
+        return {
+          finished,
+          stop: () => {
+            if (stopped) return;
+            stopped = true;
+            cancelAnimationFrame(frame);
+            resolveFinished();
+          },
+        };
+      };
 
       const put = (selector: string, value: string) => {
-        const element = root.querySelector(selector);
-        if (element) element.textContent = value;
+        root.querySelectorAll(selector).forEach((element) => { element.textContent = value; });
+      };
+      const hidePackets = () => {
+        root.querySelectorAll<SVGCircleElement>("[data-packet]").forEach((packet) => { packet.style.opacity = "0"; });
+      };
+      const clearPathStyles = () => {
+        root.querySelectorAll<SVGPathElement>("[data-edge]").forEach((path) => {
+          path.style.removeProperty("stroke-dasharray");
+          path.style.removeProperty("stroke-dashoffset");
+        });
+      };
+      const stopAnimations = () => {
+        transitionId += 1;
+        activeAnimations.forEach((animation) => animation.stop());
+        activeAnimations = [];
+        hidePackets();
+        clearPathStyles();
+        root.querySelectorAll<SVGGElement>("[data-node]").forEach((node) => { node.style.removeProperty("opacity"); });
+      };
+      const waitFor = async (animation: MotionControls) => {
+        await animation.finished.catch(() => undefined);
+      };
+      const visibleMap = () => root.querySelector<SVGSVGElement>(compact ? ".compact-map" : narrowLayout.matches ? ".mobile-map" : ".full-map")!;
+      const edgePath = (name: NodeName, occurrence = 0) => visibleMap().querySelectorAll<SVGPathElement>(`[data-edge="${name}"]`)[occurrence] || null;
+      const packet = (name: "primary" | "secondary") => visibleMap().querySelector<SVGCircleElement>(`[data-packet="${name}"]`);
+      const movePacket = async (path: SVGPathElement, packetName: "primary" | "secondary", reverse = false, duration = 0.2) => {
+        const token = transitionId;
+        const particle = packet(packetName);
+        if (!particle) return;
+        const length = path.getTotalLength();
+        const setPoint = (progress: number) => {
+          const point = path.getPointAtLength(length * (reverse ? 1 - progress : progress));
+          particle.setAttribute("cx", String(point.x));
+          particle.setAttribute("cy", String(point.y));
+        };
+        setPoint(0);
+        particle.style.opacity = "1";
+        if (reducedMotion) {
+          setPoint(1);
+          particle.style.opacity = "0";
+          return;
+        }
+        const controls = animateValue(0, 1, duration, setPoint);
+        activeAnimations.push(controls);
+        await waitFor(controls);
+        if (token === transitionId) particle.style.opacity = "0";
+      };
+      const drawPath = async (path: SVGPathElement, duration = 0.2) => {
+        const token = transitionId;
+        if (reducedMotion) return;
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = String(length);
+        path.style.strokeDashoffset = String(length);
+        const controls = animateValue(length, 0, duration, (value) => {
+          path.style.strokeDashoffset = String(value);
+        });
+        activeAnimations.push(controls);
+        await waitFor(controls);
+        if (token === transitionId) {
+          path.style.removeProperty("stroke-dasharray");
+          path.style.removeProperty("stroke-dashoffset");
+        }
+      };
+      const route = (name: NodeName, packetName: "primary" | "secondary", occurrence = 0, reverse = false) => {
+        const path = edgePath(name, occurrence);
+        if (!path) return Promise.resolve();
+        path.classList.add("is-traced");
+        return Promise.all([drawPath(path), movePacket(path, packetName, reverse)]);
+      };
+      const animateTransition = async (nextIndex: number) => {
+        const token = transitionId;
+        const routes: Array<{ edge: NodeName; packet: "primary" | "secondary"; occurrence?: number; reverse?: boolean }> = [];
+        if (scenario === "duplicate" && nextIndex === 5) {
+          const api = visibleMap().querySelector<SVGGElement>('[data-node="api"]');
+          if (api && !reducedMotion) {
+            const controls = animateValue(0, 1, 0.2, (value) => {
+              api.style.opacity = value < 0.5 ? String(1 - value * 0.84) : String(0.58 + (value - 0.5) * 0.84);
+            });
+            activeAnimations.push(controls);
+            await waitFor(controls);
+          }
+        } else if (nextIndex === 1) {
+          routes.push({ edge: compact ? "log" : "api", packet: "primary" });
+        } else if (nextIndex === 2 && !compact) {
+          routes.push({ edge: "log", packet: "primary" });
+        } else if (nextIndex === 3) {
+          if (scenario === "timeout") routes.push({ edge: "payment", packet: "primary" });
+          else routes.push({ edge: "inventory", packet: "primary" }, { edge: "payment", packet: "secondary" });
+        } else if (scenario === "timeout" && nextIndex === 4) {
+          routes.push({ edge: "payment", packet: "primary", reverse: true });
+        } else if ((scenario === "healthy" && nextIndex === 4) || (scenario === "timeout" && nextIndex === 5) || (scenario === "duplicate" && nextIndex === 4)) {
+          routes.push({ edge: "confirmed", packet: "primary" }, { edge: "confirmed", packet: "secondary", occurrence: 1 });
+        }
+        await Promise.all(routes.map((item) => route(item.edge, item.packet, item.occurrence, item.reverse)));
+        if (token !== transitionId) return;
       };
       const render = () => {
         const current = scenarios[scenario];
@@ -242,6 +425,7 @@ const { compact = false } = Astro.props;
               const event = document.createElement("code");
               event.textContent = item.event || "";
               entry.append(number, event);
+              entry.className = "trace-enter";
               trace.append(entry);
             });
           }
@@ -250,27 +434,36 @@ const { compact = false } = Astro.props;
       const stop = () => {
         clearTimeout(timer);
         playing = false;
+        stopAnimations();
       };
-      const tick = () => {
-        if (!root.isConnected) return stop();
+      const advance = async () => {
+        const current = scenarios[scenario];
         index += 1;
-        if (index === scenarios[scenario].frames.length - 1) playing = false;
+        if (index === current.frames.length - 1) playing = false;
         render();
-        if (playing) timer = setTimeout(tick, 1600);
+        await animateTransition(index);
+      };
+      const tick = async () => {
+        if (!root.isConnected) return stop();
+        stopAnimations();
+        await advance();
+        if (playing) timer = setTimeout(() => void tick(), reducedMotion ? 0 : 900);
       };
       next.addEventListener("click", () => {
         if (playing) { stop(); render(); return; }
         if (index === scenarios[scenario].frames.length - 1) index = 0;
         if (compact) {
           playing = true;
-          tick();
+          void tick();
         } else {
-          index += 1;
-          render();
+          stopAnimations();
+          void advance();
         }
       });
       reset.addEventListener("click", () => { stop(); index = 0; render(); });
       select?.addEventListener("change", () => { stop(); scenario = select.value; index = 0; render(); });
+      if (!compact) narrowLayout.addEventListener("change", () => { stop(); render(); });
+      hidePackets();
       render();
     });
   }
@@ -285,13 +478,17 @@ const { compact = false } = Astro.props;
   .live-status i { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: var(--lab-mint); }
   .has-warning .live-status i { background: var(--lab-rust); }
   .diagram { padding: 8px 15px 0; }
-  .diagram:focus-visible { outline: 1px solid var(--lab-rust); outline-offset: -3px; }
-  .diagram-scroll-hint { display: none; }
+  .diagram:focus-visible { outline: 2px solid var(--lab-rust); outline-offset: 5px; }
   .diagram svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .diagram .mobile-map { display: none; }
+  .mobile-map .node-name { font-size: 16px; letter-spacing: 0; }
+  .mobile-map .node-detail { font-size: 11px; }
   .dot-field { color: #7e969e; opacity: .16; }
   .connections { stroke: #5a707a; stroke-width: 1; color: #8ba0a7; }
   .connections path { transition: stroke .25s ease; }
   .connections .is-traced { stroke: var(--lab-mint); }
+  .packet { fill: var(--lab-rust); opacity: 0; }
+  .packet-secondary { fill: var(--lab-mint); }
   .junction { fill: #8ba0a7; }
   .annotation { fill: #90a4ac; font: 10px var(--font-mono, monospace); letter-spacing: 1px; }
   .node rect { fill: #1c303d; stroke: #637983; stroke-width: 1; transition: fill .25s ease, stroke .25s ease; }
@@ -317,12 +514,12 @@ const { compact = false } = Astro.props;
   button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--lab-rust); outline-offset: 5px; }
   .lab-footnote { border-top: 1px solid #3b4b54; display: flex; align-items: baseline; justify-content: space-between; gap: 22px; padding: 17px 26px; color: #92a6ae; font: 9px/1.6 var(--font-mono, monospace); letter-spacing: .055em; }
   .lab-footnote > span:last-child:not(:first-child) { max-width: 50ch; text-align: right; letter-spacing: 0; }
-  .lab-footnote a { color: #c4d3ca; text-decoration: none; white-space: nowrap; letter-spacing: 0; }
+  .lab-footnote a { color: #c4d3ca; text-decoration: none; white-space: nowrap; letter-spacing: 0; min-height: 24px; display: inline-flex; align-items: center; }
   .lab-footnote a:hover { color: #fff; }
   .scenario-bar { display: flex; justify-content: space-between; align-items: end; gap: 30px; padding: 30px 26px 0; }
   .scenario-select { display: grid; gap: 10px; min-width: 210px; }
   .scenario-select > span { font: 9px var(--font-mono, monospace); letter-spacing: .1em; color: #9eafb5; }
-  .scenario-select select { border: 1px solid #5c717c; border-radius: 2px; padding: 10px 28px 10px 12px; font: 13px var(--font-sans, sans-serif); color: #e5e9e5; background: #213542; }
+  .scenario-select select { border: 1px solid #9eafb5; border-radius: 2px; padding: 10px 28px 10px 12px; font: 13px var(--font-sans, sans-serif); color: #e5e9e5; background: #213542; min-height: 24px; }
   .scenario-bar p { color: #aabac0; font-size: 12px; line-height: 1.6; margin: 0 0 3px; max-width: 29ch; }
   .trace-section { margin: 0 26px 28px; border-top: 1px solid #3b4b54; padding-top: 23px; }
   .trace-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; }
@@ -333,6 +530,8 @@ const { compact = false } = Astro.props;
   .event-trace :global(li > span) { color: #e18b60; font-size: 9px; padding-top: 1px; }
   .event-trace :global(code) { overflow-wrap: anywhere; font: inherit; }
   .event-trace :global(.empty-trace) { color: #91a5ad; font-family: var(--font-sans, sans-serif); font-size: 12px; }
+  .trace-enter { animation: trace-enter .2s ease-out both; }
+  @keyframes trace-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   .lesson { background: #223640; border-left: 2px solid #b7d1bd; padding: 15px 18px; }
   .lesson > span { color: #b7d1bd; font: 9px var(--font-mono, monospace); letter-spacing: .1em; }
   .lesson p { margin: 8px 0 0; color: #c4d0d2; font-size: 13px; line-height: 1.7; }
@@ -347,6 +546,7 @@ const { compact = false } = Astro.props;
   .compact .full-map { display: none; }
   .compact .diagram { padding: 20px 25px; }
   .compact .diagram svg { min-width: 0; width: 100%; max-height: 270px; }
+  .compact .node-name { font-size: 19px; letter-spacing: 0; }
   .compact .step-number { display: none; }
   .lab-heading { font-family: var(--font-sans, sans-serif); font-size: 14px; letter-spacing: 0; }
   .live-status { font-family: var(--font-sans, sans-serif); font-size: 11px; letter-spacing: 0; }
@@ -355,28 +555,29 @@ const { compact = false } = Astro.props;
   .compact .run-button { font-family: var(--font-sans, sans-serif); font-size: 12px; min-width: 60px; }
   .scenario-select>span { font-family: var(--font-sans, sans-serif); font-size: 12px; letter-spacing: 0; }
   .node-index, .annotation { display: none; }
-  @media (max-width: 650px) {
-    .lab-heading { padding: 20px 18px 0; font-size: 8px; gap: 12px; }
-    .live-status { font-size: 7px; }
-    .diagram { padding: 20px 0 8px; overflow-x: auto; }
-    .full-map { min-width: 540px; }
-    .compact .diagram svg { min-width: 0; }
-    .diagram-scroll-hint { display: block; margin: 0 18px 20px; color: #90a4ac; font: 7px var(--font-mono, monospace); letter-spacing: .08em; }
+  @media (max-width: 600px) {
+    .lab-heading { padding: 20px 18px 0; font-size: 14px; gap: 12px; flex-wrap: wrap; }
+    .live-status { font-size: 12px; }
+    .diagram { padding: 20px 18px 16px; }
+    .diagram .full-map { display: none; }
+    .diagram .mobile-map { display: block; max-width: 440px; margin-inline: auto; }
     .replay-bar, .compact .replay-bar { padding: 0 18px 22px; display: block; }
     .step-copy { gap: 12px; }
-    .step-copy p, .compact .step-copy p { font-size: 12px; min-height: 5em; max-width: none; }
+    .step-copy p, .compact .step-copy p { font-size: 14px; min-height: 5em; max-width: none; }
     .replay-actions { margin-top: 16px; }
     .compact .step-copy { display: block; }
     .compact .step-number { margin-bottom: 0; }
-    .lab-footnote { padding: 15px 18px; font-size: 8px; gap: 12px; flex-wrap: wrap; }
+    .lab-footnote { padding: 15px 18px; font-size: 12px; gap: 12px; flex-wrap: wrap; }
     .lab-footnote > span:last-child:not(:first-child) { text-align: left; }
     .scenario-bar { padding: 26px 18px 0; }
     .scenario-bar p { display: none; }
     .scenario-select { width: 100%; }
     .trace-section { margin-right: 18px; margin-left: 18px; }
-    .trace-heading > span { font-size: 7px; }
+    .static-transcript { font-size: 14px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .node rect, .connections path, .run-button { transition: none; }
+    .trace-enter { animation: none; }
+    .packet { opacity: 0 !important; }
   }
 </style>
