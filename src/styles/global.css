@@ -213,6 +213,7 @@ html[data-theme="dark"] .search-field input::placeholder{color:var(--muted)}
 .article-toc summary::marker { color: var(--accent); }
 .article-toc nav { display: flex; flex-direction: column; gap: 13px; margin-top: 18px; }
 .article-toc nav a { font-size: 12px; line-height: 1.6; max-width: 190px; color: var(--muted); padding: 3px 0 3px 12px; border-left: 1px solid var(--line); }
+.article-toc nav a[aria-current="location"] { color: var(--ink); border-left: 2px solid var(--accent); font-weight: 500; }
 
 @media (max-width: 1100px) {
   .home-intro { column-gap: 32px; }
@@ -240,3 +241,42 @@ html[data-theme="dark"] .search-field input::placeholder{color:var(--muted)}
   .featured-summary .essay-meta { font-size: 12px; }
   .writing-section { padding-block: 28px 40px; }
 }
+
+.section-heading-note{font-family:var(--mono);font-size:10px;letter-spacing:.055em;color:var(--muted)}
+.storage-experiment{max-width:1000px}
+.storage-lab{background:#192a36;color:#e7eee9;padding:28px 30px 24px;border-radius:3px}
+.storage-lab-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;border-bottom:1px solid #637983;padding-bottom:18px}
+.storage-lab-heading .eyebrow{color:#b7d1bd;margin:0 0 8px}
+.storage-lab-heading h2{font:400 clamp(1.8rem,3vw,2.7rem)/1.1 var(--serif);margin:0;color:#f5f3ec}
+.storage-status,.storage-column-heading span,.storage-step-number{font-family:var(--mono);font-size:10px;letter-spacing:.055em;color:#b7d1bd}
+.storage-diagram{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-block:24px 18px}
+.storage-column{min-width:0;border:1px solid #637983;padding:14px 12px 12px}
+.storage-column-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.storage-column-heading h3{font:400 1.5rem/1.2 var(--serif);margin:0;color:#f5f3ec}
+.storage-column-heading span{font-size:9px;color:#b7d1bd}
+.storage-column svg{display:block;width:100%;height:auto;color:#e18b60}
+.storage-edge{stroke:#637983;stroke-width:1}
+.storage-node rect{fill:#1c303d;stroke:#637983;stroke-width:1;transition:fill .2s,stroke .2s}
+.storage-node text{fill:#e7eee9;font:10px var(--mono);letter-spacing:.03em}
+.storage-node .storage-detail{fill:#b7c6c4;font-size:7px;letter-spacing:0}
+.storage-node.is-active rect{fill:#6e3e2f;stroke:#e18b60}
+.storage-node.is-done rect{fill:#29463f;stroke:#b7d1bd}
+.storage-node.is-active text,.storage-node.is-done text{fill:#f5f3ec}
+.storage-token{fill:#e18b60;transition:cx .25s ease-out}
+.storage-column-copy{font-size:12px;line-height:1.6;color:#c4d0cd;margin:5px 0 0}
+.storage-replay{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid #637983;padding-top:17px}
+.storage-step-copy{display:flex;align-items:baseline;gap:14px;min-width:0}
+.storage-step-copy p{font-size:13px;line-height:1.6;color:#e7eee9;margin:0;max-width:700px}
+.storage-replay-actions{display:flex;gap:9px;flex-shrink:0}
+.storage-lab .run-button,.storage-lab .reset-button{border:1px solid #b7d1bd;background:transparent;color:#f5f3ec;border-radius:2px;padding:9px 14px;min-height:36px;font-size:12px}
+.storage-lab .run-button:hover{background:#b7d1bd;color:#192a36}
+.storage-lab .run-button:disabled{opacity:.45}
+.storage-lab .reset-button{border-color:#637983;color:#c4d0cd}
+.storage-lab .reset-button:hover{border-color:#e18b60;color:#f5f3ec}
+.storage-transcript{border-top:1px solid #637983;margin-top:18px;padding-top:13px}
+.storage-transcript summary{font-size:12px;color:#c4d0cd;cursor:pointer}
+.storage-transcript ol{margin:12px 0 0;padding-left:23px;color:#c4d0cd;font-size:12px;line-height:1.7}
+.storage-transcript li{padding-left:4px;margin-bottom:5px}
+.storage-transcript strong{color:#f5f3ec}
+@media(max-width:800px){.storage-lab{padding:22px 18px 20px}.storage-diagram{grid-template-columns:1fr;gap:12px}.storage-replay{align-items:flex-start;flex-direction:column}.storage-replay-actions{width:100%}.storage-replay-actions button{flex:1}}
+@media(max-width:600px){.storage-lab-heading{align-items:flex-start;flex-direction:column;gap:10px}.storage-column-heading h3{font-size:1.35rem}.storage-column-heading span{font-size:8px}.storage-step-copy{align-items:flex-start;flex-direction:column;gap:4px}.storage-step-copy p{font-size:12px}.storage-lab .run-button,.storage-lab .reset-button{min-height:44px}}

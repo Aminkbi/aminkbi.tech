@@ -8,7 +8,7 @@ aminkbi.tech is a publication about reliable software systems. The first three e
 2. **Idempotency** — one business result for a retried command.
 3. **Transactional outbox** — a recoverable link between a database commit and an event.
 
-The site is a static reading experience with one small order-flow lab. The lab illustrates the essays; the essays remain readable as text.
+The site is a static reading experience with small interactive explanations. The labs illustrate the essays; the essays remain readable as text.
 
 ### Research and decisions
 
@@ -34,7 +34,7 @@ These references were read directly on 17 October 2026. They inform the structur
 | /writing/[...slug]/ | Essay page with metadata, table of contents, references, related writing, and a compact order experiment on **Reliable orders**. |
 | /lab/ | Full order-processing model with healthy, timeout, and duplicate-request scenarios. It supports manual step/reset; the compact figure supports run/pause/resume/reset. |
 | /about/ | Short description of the journal and its public GitHub link. |
-| /rss.xml | RSS feed for the three published essays. |
+| /rss.xml | RSS feed for the four published essays. |
 | Sitemap | Generated during the static build. |
 
 The lab scenarios are:

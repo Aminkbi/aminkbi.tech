@@ -1,0 +1,146 @@
+<section class="storage-lab" data-storage-lab aria-label="Interactive comparison of an LSM-tree and a B-tree">
+  <header class="storage-lab-heading">
+    <div>
+      <span class="eyebrow">Storage path</span>
+      <h2>One write, two places to pay</h2>
+    </div>
+    <span class="storage-status" data-storage-status>Ready</span>
+  </header>
+
+  <div class="storage-diagram" role="img" aria-label="A step-by-step comparison of one metric write through an LSM-tree and a B-tree.">
+    <div class="storage-column" data-engine="lsm">
+      <div class="storage-column-heading"><h3>LSM-tree</h3><span>immutable runs</span></div>
+      <svg viewBox="0 0 520 220" fill="none" aria-hidden="true">
+        <path class="storage-edge" data-engine-edge="lsm" d="M118 108H156M270 108H308M422 108H460" />
+        <circle class="storage-token" data-storage-token="lsm" cx="42" cy="108" r="5" />
+        <g class="storage-node" data-engine-node="lsm:wal"><rect x="18" y="78" width="100" height="60" rx="2"/><text x="68" y="103" text-anchor="middle">WAL</text><text x="68" y="121" text-anchor="middle" class="storage-detail">durable append</text></g>
+        <g class="storage-node" data-engine-node="lsm:memtable"><rect x="156" y="78" width="114" height="60" rx="2"/><text x="213" y="103" text-anchor="middle">Memtable</text><text x="213" y="121" text-anchor="middle" class="storage-detail">ordered memory</text></g>
+        <g class="storage-node" data-engine-node="lsm:sstable"><rect x="308" y="78" width="114" height="60" rx="2"/><text x="365" y="103" text-anchor="middle">SSTable</text><text x="365" y="121" text-anchor="middle" class="storage-detail">sorted file</text></g>
+        <g class="storage-node" data-engine-node="lsm:compact"><rect x="460" y="78" width="46" height="60" rx="2"/><text x="483" y="103" text-anchor="middle">C</text><text x="483" y="121" text-anchor="middle" class="storage-detail">merge</text></g>
+      </svg>
+      <p class="storage-column-copy" data-storage-copy="lsm">The write is appended, buffered, then rewritten when sorted files are compacted.</p>
+    </div>
+
+    <div class="storage-column" data-engine="btree">
+      <div class="storage-column-heading"><h3>B-tree</h3><span>pages in place</span></div>
+      <svg viewBox="0 0 520 220" fill="none" aria-hidden="true">
+        <path class="storage-edge" data-engine-edge="btree" d="M118 108H156M270 108H308M422 108H460" />
+        <circle class="storage-token" data-storage-token="btree" cx="42" cy="108" r="5" />
+        <g class="storage-node" data-engine-node="btree:wal"><rect x="18" y="78" width="100" height="60" rx="2"/><text x="68" y="103" text-anchor="middle">WAL</text><text x="68" y="121" text-anchor="middle" class="storage-detail">durable append</text></g>
+        <g class="storage-node" data-engine-node="btree:root"><rect x="156" y="78" width="114" height="60" rx="2"/><text x="213" y="103" text-anchor="middle">Root</text><text x="213" y="121" text-anchor="middle" class="storage-detail">find range</text></g>
+        <g class="storage-node" data-engine-node="btree:leaf"><rect x="308" y="78" width="114" height="60" rx="2"/><text x="365" y="103" text-anchor="middle">Leaf page</text><text x="365" y="121" text-anchor="middle" class="storage-detail">4 KiB target</text></g>
+        <g class="storage-node" data-engine-node="btree:split"><rect x="460" y="78" width="46" height="60" rx="2"/><text x="483" y="103" text-anchor="middle">S</text><text x="483" y="121" text-anchor="middle" class="storage-detail">split</text></g>
+      </svg>
+      <p class="storage-column-copy" data-storage-copy="btree">The write finds a page, updates it, and may split the page and its parent.</p>
+    </div>
+  </div>
+
+  <div class="storage-replay">
+    <div class="storage-step-copy" aria-live="polite" aria-atomic="true">
+      <span class="storage-step-number" data-storage-count>00 / 05</span>
+      <p data-storage-description>The metric point has arrived. Advance to see where each engine records the work.</p>
+    </div>
+    <div class="storage-replay-actions">
+      <button class="run-button" type="button" data-storage-next>Next</button>
+      <button class="reset-button" type="button" data-storage-reset>Reset</button>
+    </div>
+  </div>
+
+  <details class="storage-transcript">
+    <summary>Read the replay as text</summary>
+    <ol>
+      <li><strong>Arrive:</strong> one 1 KiB metric point enters both engines.</li>
+      <li><strong>Durability:</strong> both append the point to a write-ahead log.</li>
+      <li><strong>Foreground work:</strong> the LSM-tree updates its memtable; the B-tree follows its root to a leaf page.</li>
+      <li><strong>Persist:</strong> the LSM-tree flushes a sorted run; the B-tree writes its target page.</li>
+      <li><strong>Background work:</strong> the LSM-tree compacts runs; a B-tree may split a full page and update its parent.</li>
+    </ol>
+  </details>
+</section>
+
+<script>
+  type Engine = "lsm" | "btree";
+  type Frame = {
+    status: string;
+    description: string;
+    active: Record<Engine, string[]>;
+    done: Record<Engine, string[]>;
+    token: Record<Engine, number>;
+  };
+
+  const frames: Frame[] = [
+    {
+      status: "POINT ARRIVES",
+      description: "One 1 KiB metric point enters both storage engines.",
+      active: { lsm: [], btree: [] },
+      done: { lsm: [], btree: [] },
+      token: { lsm: 42, btree: 42 },
+    },
+    {
+      status: "WAL APPENDED",
+      description: "Both engines append the point to a write-ahead log before the data structure is allowed to forget it.",
+      active: { lsm: ["wal"], btree: ["wal"] },
+      done: { lsm: [], btree: [] },
+      token: { lsm: 68, btree: 68 },
+    },
+    {
+      status: "FOREGROUND WRITE",
+      description: "The LSM-tree updates an ordered memtable. The B-tree follows its root to the leaf page for this key.",
+      active: { lsm: ["memtable"], btree: ["root"] },
+      done: { lsm: ["wal"], btree: ["wal"] },
+      token: { lsm: 213, btree: 213 },
+    },
+    {
+      status: "DATA PERSISTED",
+      description: "The LSM-tree flushes a sorted run. The B-tree writes the target page, even though the point is smaller than a page.",
+      active: { lsm: ["sstable"], btree: ["leaf"] },
+      done: { lsm: ["wal", "memtable"], btree: ["wal", "root"] },
+      token: { lsm: 365, btree: 365 },
+    },
+    {
+      status: "BACKGROUND COST",
+      description: "The LSM-tree rewrites sorted runs during compaction. A B-tree may split a full page and update its parent.",
+      active: { lsm: ["compact"], btree: ["split"] },
+      done: { lsm: ["wal", "memtable", "sstable"], btree: ["wal", "root", "leaf"] },
+      token: { lsm: 483, btree: 483 },
+    },
+  ];
+
+  const labs = document.querySelectorAll<HTMLElement>("[data-storage-lab]");
+  labs.forEach((lab) => {
+    const status = lab.querySelector<HTMLElement>("[data-storage-status]");
+    const description = lab.querySelector<HTMLElement>("[data-storage-description]");
+    const count = lab.querySelector<HTMLElement>("[data-storage-count]");
+    const next = lab.querySelector<HTMLButtonElement>("[data-storage-next]");
+    const reset = lab.querySelector<HTMLButtonElement>("[data-storage-reset]");
+    if (!status || !description || !count || !next || !reset) return;
+
+    let step = 0;
+    const render = () => {
+      const frame = frames[step];
+      status.textContent = frame.status;
+      description.textContent = frame.description;
+      count.textContent = `${String(step).padStart(2, "0")} / 05`;
+      next.disabled = step === frames.length - 1;
+      (["lsm", "btree"] as Engine[]).forEach((engine) => {
+        frame.active[engine].forEach((node) => {
+          lab.querySelector(`[data-engine-node="${engine}:${node}"]`)?.classList.add("is-active");
+        });
+        frame.done[engine].forEach((node) => {
+          lab.querySelector(`[data-engine-node="${engine}:${node}"]`)?.classList.add("is-done");
+        });
+        const token = lab.querySelector<SVGCircleElement>(`[data-storage-token="${engine}"]`);
+        token?.setAttribute("cx", String(frame.token[engine]));
+      });
+    };
+    const clear = () => {
+      lab.querySelectorAll(".storage-node").forEach((node) => node.classList.remove("is-active", "is-done"));
+      step = 0;
+      render();
+    };
+    next.addEventListener("click", () => { if (step < frames.length - 1) { step += 1; clearNodes(); render(); } });
+    reset.addEventListener("click", clear);
+    const clearNodes = () => lab.querySelectorAll(".storage-node").forEach((node) => node.classList.remove("is-active", "is-done"));
+    render();
+  });
+</script>

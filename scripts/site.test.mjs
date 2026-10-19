@@ -41,10 +41,10 @@ test('every internal page, asset, and anchor resolves in the production build', 
   }
 });
 
-test('RSS includes the three published essays and the site ships a sitemap and text lab alternative', async () => {
+test('RSS includes the four published essays and the site ships a sitemap and text lab alternative', async () => {
   const feed = await readFile(path.join(root, 'rss.xml'), 'utf8');
-  assert.equal((feed.match(/<item>/g) ?? []).length, 3);
-  for (const slug of ['reliable-orders','idempotency','transactional-outbox']) assert.ok(feed.includes(`/writing/${slug}/`));
+  assert.equal((feed.match(/<item>/g) ?? []).length, 4);
+  for (const slug of ['reliable-orders','idempotency','transactional-outbox','lsm-vs-b-trees']) assert.ok(feed.includes(`/writing/${slug}/`));
   assert.ok(files.some(file => file.endsWith('sitemap-index.xml')));
   const lab = await readFile(path.join(root, 'lab/index.html'), 'utf8');
   assert.match(lab, /Scenario notes/);
